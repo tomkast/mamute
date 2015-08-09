@@ -12,5 +12,5 @@ sed -e "s/BUILD_TIMESTAMP/${TIMESTAMP}/" scripts/run.sh.template \
 sed -e "s/BUILD_TIMESTAMP/${TIMESTAMP}/" scripts/update-mamute.sh.template \
     > $TARGET_SCRIPT_UPDATE
 
-chmod +x $TARGET_SCRIPT_RUN
-chmod +x $TARGET_SCRIPT_UPDATE
+#chmod +x $TARGET_SCRIPT_RUN
+#chmod +x $TARGET_SCRIPT_UPDATE

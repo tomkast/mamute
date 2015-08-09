@@ -6,7 +6,7 @@ MAMUTE_DIR=$SCRIPT_DIR
 
 TIMESTAMP=BUILD_TIMESTAMP
 
-WEB_INF=${SCRIPT_DIR}/WEB-INF
+WEB_INF=/c/git/mamute/src/main/webapp/WEB-INF
 
 java -cp ${WEB_INF}/classes/:${WEB_INF}/lib/* \
     -Ddeploy.timestamp=$TIMESTAMP \

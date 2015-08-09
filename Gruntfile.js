@@ -63,6 +63,7 @@ module.exports = function(grunt) {
 				    src: ['**'],
 				    dest: '<%= config.webapp %>/imgs/',
 				  }
+				 					  
 				]
 	    	},
 			special:{
@@ -78,7 +79,23 @@ module.exports = function(grunt) {
 						cwd: '<%= config.webapp %>/imgs',
 						src: ['**'],
 						dest: '<%= config.webapp %>/assets/imgs'
-					}
+					},
+					{
+					    expand: true,
+					    cwd: '.tmp/',
+					    src: '**/*.css',
+					    dest: '<%= config.webapp %>/css/',
+					    flatten: true,
+					    filter: 'isFile'
+					  },
+					  {
+					    expand: true,
+					    cwd: '.tmp/',
+					    src: '**/*.js',
+					    dest: '<%= config.webapp %>/js/',
+					    flatten: true,
+					    filter: 'isFile'
+					  }
 				]
 			}
 		},
@@ -163,10 +180,10 @@ module.exports = function(grunt) {
 		grunt.loadNpmTasks('grunt-' + plugin);
 	});
 
-
+	//'concat:generated', 'cssmin:generated', 'useminPrepare', 
+	//'uglify', , 'clean:after', 'usemin',
 	grunt.registerTask('default', ['clean:before', 'less', 'copy:ignored']);
-	grunt.registerTask('build', ['default', 'useminPrepare', 'concat:generated', 'cssmin:generated', 
-									'uglify', 'filerev', 'remapFilerev', 'usemin', 'clean:after']);
+	grunt.registerTask('build', ['default', 'filerev', 'remapFilerev', 'copy:special']);
 	grunt.registerTask('run', ['default', 'copy:special', 'watch']);
 
 };

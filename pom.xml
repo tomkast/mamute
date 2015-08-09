@@ -702,7 +702,8 @@
 			    <artifactId>grunt-maven-plugin</artifactId>
 			    <version>1.4.1</version>
 			    <configuration>
-                    <gruntExecutable>node_modules/grunt-cli/bin/grunt</gruntExecutable>
+			    
+                    <gruntExecutable>c:/Users/tom/AppData/Roaming/npm/grunt</gruntExecutable>
 			        <gruntOptions>
                         <gruntOption>--verbose</gruntOption>
                     </gruntOptions>
@@ -759,13 +760,16 @@
 						<phase>prepare-package</phase>
 						<goals>
 							<goal>exec</goal>
-						</goals>
+						</goals>					
 						<configuration>
-							<executable>scripts/post-build.sh</executable>
+							<executable>C:\Program Files\Git\bin\bash.exe</executable>							
+							<workingDirectory>.</workingDirectory>
 							<arguments>
-								<argument>${timestamp}</argument>
+								<argument>.\scripts\post-build.sh</argument>
+								<argument>${timestamp}</argument>									
 							</arguments>
 						</configuration>
+        
 					</execution>
 				</executions>
 			</plugin>
