@@ -1,0 +1,152 @@
+diff --git a/Gruntfile.js b/Gruntfile.js
+index 80a9e5b..a69f891 100644
+--- a/Gruntfile.js
++++ b/Gruntfile.js
+@@ -63,6 +63,7 @@ module.exports = function(grunt) {
+ 				    src: ['**'],
+ 				    dest: '<%= config.webapp %>/imgs/',
+ 				  }
++				 					  
+ 				]
+ 	    	},
+ 			special:{
+@@ -78,7 +79,23 @@ module.exports = function(grunt) {
+ 						cwd: '<%= config.webapp %>/imgs',
+ 						src: ['**'],
+ 						dest: '<%= config.webapp %>/assets/imgs'
+-					}
++					},
++					{
++					    expand: true,
++					    cwd: '.tmp/',
++					    src: '**/*.css',
++					    dest: '<%= config.webapp %>/css/',
++					    flatten: true,
++					    filter: 'isFile'
++					  },
++					  {
++					    expand: true,
++					    cwd: '.tmp/',
++					    src: '**/*.js',
++					    dest: '<%= config.webapp %>/js/',
++					    flatten: true,
++					    filter: 'isFile'
++					  }
+ 				]
+ 			}
+ 		},
+@@ -163,10 +180,10 @@ module.exports = function(grunt) {
+ 		grunt.loadNpmTasks('grunt-' + plugin);
+ 	});
+ 
+-
++	//'concat:generated', 'cssmin:generated', 'useminPrepare', 
++	//'uglify', , 'clean:after', 'usemin',
+ 	grunt.registerTask('default', ['clean:before', 'less', 'copy:ignored']);
+-	grunt.registerTask('build', ['default', 'useminPrepare', 'concat:generated', 'cssmin:generated', 
+-									'uglify', 'filerev', 'remapFilerev', 'usemin', 'clean:after']);
++	grunt.registerTask('build', ['default', 'filerev', 'remapFilerev', 'copy:special']);
+ 	grunt.registerTask('run', ['default', 'copy:special', 'watch']);
+ 
+ };
+\ No newline at end of file
+diff --git a/pom.xml b/pom.xml
+index d9e90ee..98547d8 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -702,7 +702,8 @@
+ 			    <artifactId>grunt-maven-plugin</artifactId>
+ 			    <version>1.4.1</version>
+ 			    <configuration>
+-                    <gruntExecutable>node_modules/grunt-cli/bin/grunt</gruntExecutable>
++			    
++                    <gruntExecutable>c:/Users/tom/AppData/Roaming/npm/grunt</gruntExecutable>
+ 			        <gruntOptions>
+                         <gruntOption>--verbose</gruntOption>
+                     </gruntOptions>
+@@ -759,13 +760,16 @@
+ 						<phase>prepare-package</phase>
+ 						<goals>
+ 							<goal>exec</goal>
+-						</goals>
++						</goals>					
+ 						<configuration>
+-							<executable>scripts/post-build.sh</executable>
++							<executable>C:\Program Files\Git\bin\bash.exe</executable>							
++							<workingDirectory>.</workingDirectory>
+ 							<arguments>
+-								<argument>${timestamp}</argument>
++								<argument>.\scripts\post-build.sh</argument>
++								<argument>${timestamp}</argument>									
+ 							</arguments>
+ 						</configuration>
++        
+ 					</execution>
+ 				</executions>
+ 			</plugin>
+diff --git a/scripts/mvn-package.sh b/scripts/mvn-package.sh
+index 16e7f73..b377920 100755
+--- a/scripts/mvn-package.sh
++++ b/scripts/mvn-package.sh
+@@ -3,7 +3,7 @@ TEMP_FOLDER_NAME=".mamute-build"
+ TEMP_FOLDER="${APPLICATION_DIR}/${TEMP_FOLDER_NAME}"
+ cd ${APPLICATION_DIR}
+ mvn clean
+-rsync -av --delete --exclude=${TEMP_FOLDER_NAME} --exclude=.git . ${TEMP_FOLDER} 
++#rsync -av --delete --exclude=${TEMP_FOLDER_NAME} --exclude=.git . ${TEMP_FOLDER} 
+ cd ${TEMP_FOLDER}
+ mvn package -DskipTests
+ mv target ../target
+diff --git a/scripts/post-build.sh b/scripts/post-build.sh
+index 0d2fd26..bdb741f 100755
+--- a/scripts/post-build.sh
++++ b/scripts/post-build.sh
+@@ -12,5 +12,5 @@ sed -e "s/BUILD_TIMESTAMP/${TIMESTAMP}/" scripts/run.sh.template \
+ sed -e "s/BUILD_TIMESTAMP/${TIMESTAMP}/" scripts/update-mamute.sh.template \
+     > $TARGET_SCRIPT_UPDATE
+ 
+-chmod +x $TARGET_SCRIPT_RUN
+-chmod +x $TARGET_SCRIPT_UPDATE
+\ No newline at end of file
++#chmod +x $TARGET_SCRIPT_RUN
++#chmod +x $TARGET_SCRIPT_UPDATE
+\ No newline at end of file
+diff --git a/scripts/run.sh.template b/scripts/run.sh.template
+index 44b2132..08af3dc 100755
+--- a/scripts/run.sh.template
++++ b/scripts/run.sh.template
+@@ -6,7 +6,7 @@ MAMUTE_DIR=$SCRIPT_DIR
+ 
+ TIMESTAMP=BUILD_TIMESTAMP
+ 
+-WEB_INF=${SCRIPT_DIR}/WEB-INF
++WEB_INF=/c/git/mamute/src/main/webapp/WEB-INF
+ 
+ java -cp ${WEB_INF}/classes/:${WEB_INF}/lib/* \
+     -Ddeploy.timestamp=$TIMESTAMP \
+diff --git a/src/test/java/org/mamute/auth/SignupInfoTest.java b/src/test/java/org/mamute/auth/SignupInfoTest.java
+index 7251252..cce7768 100644
+--- a/src/test/java/org/mamute/auth/SignupInfoTest.java
++++ b/src/test/java/org/mamute/auth/SignupInfoTest.java
+@@ -24,7 +24,7 @@ public class SignupInfoTest {
+ 		SignupInfo info = SignupInfo.fromFacebook(jsonObject).get();
+ 		assertEquals("chico@brutal.com", info.getEmail());
+ 		assertEquals("Francisco Sokol", info.getName());
+-		assertEquals("São Paulo, Brazil", info.getLocation());
++		assertEquals("S Paulo, Brazil", info.getLocation());
+ 		assertTrue(info.getPhotoUri().getPath().contains("100001959511194"));
+ 		assertEquals(MethodType.FACEBOOK, info.getMethod());
+ 	}
+diff --git a/src/test/resources/facebook-user.json b/src/test/resources/facebook-user.json
+index 3a2f452..a527053 100644
+--- a/src/test/resources/facebook-user.json
++++ b/src/test/resources/facebook-user.json
+@@ -8,7 +8,7 @@
+   "birthday": "02/07/1989", 
+   "location": {
+     "id": "112047398814697", 
+-    "name": "São Paulo, Brazil"
++    "name": "S Paulo, Brazil"
+   }, 
+   "gender": "male", 
+   "email": "chico@brutal.com", 

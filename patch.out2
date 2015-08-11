@@ -1,0 +1,158 @@
+diff --git a/Gruntfile.js b/Gruntfile.js
+index 80a9e5b..a652d4f 100644
+--- a/Gruntfile.js
++++ b/Gruntfile.js
+@@ -163,10 +163,10 @@ module.exports = function(grunt) {
+ 		grunt.loadNpmTasks('grunt-' + plugin);
+ 	});
+ 
+-
++	//'concat:generated', 'cssmin:generated', 
++	//'uglify', , 'clean:after'
+ 	grunt.registerTask('default', ['clean:before', 'less', 'copy:ignored']);
+-	grunt.registerTask('build', ['default', 'useminPrepare', 'concat:generated', 'cssmin:generated', 
+-									'uglify', 'filerev', 'remapFilerev', 'usemin', 'clean:after']);
++	grunt.registerTask('build', ['default', 'useminPrepare',  'filerev', 'remapFilerev', 'usemin']);
+ 	grunt.registerTask('run', ['default', 'copy:special', 'watch']);
+ 
+ };
+\ No newline at end of file
+diff --git a/pom.xml b/pom.xml
+index d9e90ee..d81483b 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -702,7 +702,8 @@
+ 			    <artifactId>grunt-maven-plugin</artifactId>
+ 			    <version>1.4.1</version>
+ 			    <configuration>
+-                    <gruntExecutable>node_modules/grunt-cli/bin/grunt</gruntExecutable>
++			    
++                    <gruntExecutable>c:/Users/tom/AppData/Roaming/npm/grunt</gruntExecutable>
+ 			        <gruntOptions>
+                         <gruntOption>--verbose</gruntOption>
+                     </gruntOptions>
+@@ -759,13 +760,16 @@
+ 						<phase>prepare-package</phase>
+ 						<goals>
+ 							<goal>exec</goal>
+-						</goals>
++						</goals>					
+ 						<configuration>
+-							<executable>scripts/post-build.sh</executable>
++							<executable>C:\Program Files\Git\bin\bash.exe</executable>							
++							<workingDirectory>.\scripts</workingDirectory>
+ 							<arguments>
+-								<argument>${timestamp}</argument>
++								<argument>.\post-build.sh</argument>
++								<argument>${timestamp}</argument>									
+ 							</arguments>
+ 						</configuration>
++        
+ 					</execution>
+ 				</executions>
+ 			</plugin>
+diff --git a/scripts/mvn-package.sh b/scripts/mvn-package.sh
+index 16e7f73..b377920 100755
+--- a/scripts/mvn-package.sh
++++ b/scripts/mvn-package.sh
+@@ -3,7 +3,7 @@ TEMP_FOLDER_NAME=".mamute-build"
+ TEMP_FOLDER="${APPLICATION_DIR}/${TEMP_FOLDER_NAME}"
+ cd ${APPLICATION_DIR}
+ mvn clean
+-rsync -av --delete --exclude=${TEMP_FOLDER_NAME} --exclude=.git . ${TEMP_FOLDER} 
++#rsync -av --delete --exclude=${TEMP_FOLDER_NAME} --exclude=.git . ${TEMP_FOLDER} 
+ cd ${TEMP_FOLDER}
+ mvn package -DskipTests
+ mv target ../target
+diff --git a/scripts/post-build.sh b/scripts/post-build.sh
+index 0d2fd26..d78ef8b 100755
+--- a/scripts/post-build.sh
++++ b/scripts/post-build.sh
+@@ -1,16 +1,16 @@
+ TIMESTAMP=$1
+ 
+-VERSION=`scripts/get-version.sh`
++VERSION=`./get-version.sh`
+ 
+-TARGET_DIR="target/mamute-$VERSION/"
+-TARGET_SCRIPT_RUN="target/mamute-$VERSION/run.sh"
+-TARGET_SCRIPT_UPDATE="target/mamute-$VERSION/update-mamute.sh"
++TARGET_DIR="../target/mamute-$VERSION/"
++TARGET_SCRIPT_RUN="../target/mamute-$VERSION/run.sh"
++TARGET_SCRIPT_UPDATE="../target/mamute-$VERSION/update-mamute.sh"
+ 
+-sed -e "s/BUILD_TIMESTAMP/${TIMESTAMP}/" scripts/run.sh.template \
++sed -e "s/BUILD_TIMESTAMP/${TIMESTAMP}/" ./run.sh.template \
+     > $TARGET_SCRIPT_RUN
+ 
+-sed -e "s/BUILD_TIMESTAMP/${TIMESTAMP}/" scripts/update-mamute.sh.template \
++sed -e "s/BUILD_TIMESTAMP/${TIMESTAMP}/" ./update-mamute.sh.template \
+     > $TARGET_SCRIPT_UPDATE
+ 
+-chmod +x $TARGET_SCRIPT_RUN
+-chmod +x $TARGET_SCRIPT_UPDATE
+\ No newline at end of file
++#chmod +x $TARGET_SCRIPT_RUN
++#chmod +x $TARGET_SCRIPT_UPDATE
+\ No newline at end of file
+diff --git a/scripts/run.sh.template b/scripts/run.sh.template
+index 44b2132..08af3dc 100755
+--- a/scripts/run.sh.template
++++ b/scripts/run.sh.template
+@@ -6,7 +6,7 @@ MAMUTE_DIR=$SCRIPT_DIR
+ 
+ TIMESTAMP=BUILD_TIMESTAMP
+ 
+-WEB_INF=${SCRIPT_DIR}/WEB-INF
++WEB_INF=/c/git/mamute/src/main/webapp/WEB-INF
+ 
+ java -cp ${WEB_INF}/classes/:${WEB_INF}/lib/* \
+     -Ddeploy.timestamp=$TIMESTAMP \
+diff --git a/src/main/java/br/com/caelum/vraptor/server/Main.java b/src/main/java/br/com/caelum/vraptor/server/Main.java
+index 05bc494..7d904f3 100644
+--- a/src/main/java/br/com/caelum/vraptor/server/Main.java
++++ b/src/main/java/br/com/caelum/vraptor/server/Main.java
+@@ -1,3 +1,4 @@
++
+ package br.com.caelum.vraptor.server;
+ 
+ import java.util.Arrays;
+diff --git a/src/main/webapp/WEB-INF/jsp/antiHack/massiveVotesForm.jsp b/src/main/webapp/WEB-INF/jsp/antiHack/massiveVotesForm.jsp
+index 2fc7aec..0b4932e 100644
+--- a/src/main/webapp/WEB-INF/jsp/antiHack/massiveVotesForm.jsp
++++ b/src/main/webapp/WEB-INF/jsp/antiHack/massiveVotesForm.jsp
+@@ -13,7 +13,7 @@
+ </h2>
+ 
+ <form action="${linkTo[AntiHackController].showSuspects}" method="post">
+-	<label>In�cio</label>
++	<label>In�cio</label>
+ 	<input type="text" class="date datepicker text-input" name="begin">
+ 	<label>Fim</label>
+ 	<input type="text" class="date datepicker text-input" name="end">
+diff --git a/src/test/java/org/mamute/auth/SignupInfoTest.java b/src/test/java/org/mamute/auth/SignupInfoTest.java
+index 7251252..cce7768 100644
+--- a/src/test/java/org/mamute/auth/SignupInfoTest.java
++++ b/src/test/java/org/mamute/auth/SignupInfoTest.java
+@@ -24,7 +24,7 @@ public class SignupInfoTest {
+ 		SignupInfo info = SignupInfo.fromFacebook(jsonObject).get();
+ 		assertEquals("chico@brutal.com", info.getEmail());
+ 		assertEquals("Francisco Sokol", info.getName());
+-		assertEquals("São Paulo, Brazil", info.getLocation());
++		assertEquals("S Paulo, Brazil", info.getLocation());
+ 		assertTrue(info.getPhotoUri().getPath().contains("100001959511194"));
+ 		assertEquals(MethodType.FACEBOOK, info.getMethod());
+ 	}
+diff --git a/src/test/resources/facebook-user.json b/src/test/resources/facebook-user.json
+index 3a2f452..a527053 100644
+--- a/src/test/resources/facebook-user.json
++++ b/src/test/resources/facebook-user.json
+@@ -8,7 +8,7 @@
+   "birthday": "02/07/1989", 
+   "location": {
+     "id": "112047398814697", 
+-    "name": "São Paulo, Brazil"
++    "name": "S Paulo, Brazil"
+   }, 
+   "gender": "male", 
+   "email": "chico@brutal.com", 

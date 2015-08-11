@@ -1,0 +1,386 @@
+diff --git a/Gruntfile.js b/Gruntfile.js
+index 80a9e5b..78ce0d2 100644
+--- a/Gruntfile.js
++++ b/Gruntfile.js
+@@ -63,6 +63,7 @@ module.exports = function(grunt) {
+ 				    src: ['**'],
+ 				    dest: '<%= config.webapp %>/imgs/',
+ 				  }
++				 					  
+ 				]
+ 	    	},
+ 			special:{
+@@ -78,7 +79,23 @@ module.exports = function(grunt) {
+ 						cwd: '<%= config.webapp %>/imgs',
+ 						src: ['**'],
+ 						dest: '<%= config.webapp %>/assets/imgs'
+-					}
++					},
++					{
++					    expand: true,
++					    cwd: '.tmp/',
++					    src: '**/*.css',
++					    dest: '<%= config.webapp %>/css/',
++					    flatten: true,
++					    filter: 'isFile'
++					  },
++					  {
++					    expand: true,
++					    cwd: '.tmp/',
++					    src: '**/*.js',
++					    dest: '<%= config.webapp %>/js/',
++					    flatten: true,
++					    filter: 'isFile'
++					  }
+ 				]
+ 			}
+ 		},
+@@ -163,10 +180,10 @@ module.exports = function(grunt) {
+ 		grunt.loadNpmTasks('grunt-' + plugin);
+ 	});
+ 
+-
++	//'concat:generated', 'cssmin:generated', 
++	//'uglify', , 'clean:after'
+ 	grunt.registerTask('default', ['clean:before', 'less', 'copy:ignored']);
+-	grunt.registerTask('build', ['default', 'useminPrepare', 'concat:generated', 'cssmin:generated', 
+-									'uglify', 'filerev', 'remapFilerev', 'usemin', 'clean:after']);
++	grunt.registerTask('build', ['default', 'useminPrepare',  'filerev', 'remapFilerev', 'usemin', 'copy:special']);
+ 	grunt.registerTask('run', ['default', 'copy:special', 'watch']);
+ 
+ };
+\ No newline at end of file
+diff --git a/pom.xml b/pom.xml
+index d9e90ee..98547d8 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -702,7 +702,8 @@
+ 			    <artifactId>grunt-maven-plugin</artifactId>
+ 			    <version>1.4.1</version>
+ 			    <configuration>
+-                    <gruntExecutable>node_modules/grunt-cli/bin/grunt</gruntExecutable>
++			    
++                    <gruntExecutable>c:/Users/tom/AppData/Roaming/npm/grunt</gruntExecutable>
+ 			        <gruntOptions>
+                         <gruntOption>--verbose</gruntOption>
+                     </gruntOptions>
+@@ -759,13 +760,16 @@
+ 						<phase>prepare-package</phase>
+ 						<goals>
+ 							<goal>exec</goal>
+-						</goals>
++						</goals>					
+ 						<configuration>
+-							<executable>scripts/post-build.sh</executable>
++							<executable>C:\Program Files\Git\bin\bash.exe</executable>							
++							<workingDirectory>.</workingDirectory>
+ 							<arguments>
+-								<argument>${timestamp}</argument>
++								<argument>.\scripts\post-build.sh</argument>
++								<argument>${timestamp}</argument>									
+ 							</arguments>
+ 						</configuration>
++        
+ 					</execution>
+ 				</executions>
+ 			</plugin>
+diff --git a/scripts/mvn-package.sh b/scripts/mvn-package.sh
+index 16e7f73..b377920 100755
+--- a/scripts/mvn-package.sh
++++ b/scripts/mvn-package.sh
+@@ -3,7 +3,7 @@ TEMP_FOLDER_NAME=".mamute-build"
+ TEMP_FOLDER="${APPLICATION_DIR}/${TEMP_FOLDER_NAME}"
+ cd ${APPLICATION_DIR}
+ mvn clean
+-rsync -av --delete --exclude=${TEMP_FOLDER_NAME} --exclude=.git . ${TEMP_FOLDER} 
++#rsync -av --delete --exclude=${TEMP_FOLDER_NAME} --exclude=.git . ${TEMP_FOLDER} 
+ cd ${TEMP_FOLDER}
+ mvn package -DskipTests
+ mv target ../target
+diff --git a/scripts/post-build.sh b/scripts/post-build.sh
+index 0d2fd26..bdb741f 100755
+--- a/scripts/post-build.sh
++++ b/scripts/post-build.sh
+@@ -12,5 +12,5 @@ sed -e "s/BUILD_TIMESTAMP/${TIMESTAMP}/" scripts/run.sh.template \
+ sed -e "s/BUILD_TIMESTAMP/${TIMESTAMP}/" scripts/update-mamute.sh.template \
+     > $TARGET_SCRIPT_UPDATE
+ 
+-chmod +x $TARGET_SCRIPT_RUN
+-chmod +x $TARGET_SCRIPT_UPDATE
+\ No newline at end of file
++#chmod +x $TARGET_SCRIPT_RUN
++#chmod +x $TARGET_SCRIPT_UPDATE
+\ No newline at end of file
+diff --git a/scripts/run.sh.template b/scripts/run.sh.template
+index 44b2132..08af3dc 100755
+--- a/scripts/run.sh.template
++++ b/scripts/run.sh.template
+@@ -6,7 +6,7 @@ MAMUTE_DIR=$SCRIPT_DIR
+ 
+ TIMESTAMP=BUILD_TIMESTAMP
+ 
+-WEB_INF=${SCRIPT_DIR}/WEB-INF
++WEB_INF=/c/git/mamute/src/main/webapp/WEB-INF
+ 
+ java -cp ${WEB_INF}/classes/:${WEB_INF}/lib/* \
+     -Ddeploy.timestamp=$TIMESTAMP \
+diff --git a/src/main/java/br/com/caelum/vraptor/server/Main.java b/src/main/java/br/com/caelum/vraptor/server/Main.java
+index 05bc494..7d904f3 100644
+--- a/src/main/java/br/com/caelum/vraptor/server/Main.java
++++ b/src/main/java/br/com/caelum/vraptor/server/Main.java
+@@ -1,3 +1,4 @@
++
+ package br.com.caelum.vraptor.server;
+ 
+ import java.util.Arrays;
+diff --git a/src/main/webapp/WEB-INF/jsp/antiHack/massiveVotesForm.jsp b/src/main/webapp/WEB-INF/jsp/antiHack/massiveVotesForm.jsp
+index 2fc7aec..0b4932e 100644
+--- a/src/main/webapp/WEB-INF/jsp/antiHack/massiveVotesForm.jsp
++++ b/src/main/webapp/WEB-INF/jsp/antiHack/massiveVotesForm.jsp
+@@ -13,7 +13,7 @@
+ </h2>
+ 
+ <form action="${linkTo[AntiHackController].showSuspects}" method="post">
+-	<label>Início</label>
++	<label>Inï¿½cio</label>
+ 	<input type="text" class="date datepicker text-input" name="begin">
+ 	<label>Fim</label>
+ 	<input type="text" class="date datepicker text-input" name="end">
+diff --git a/src/main/webapp/WEB-INF/jsp/coda.jspf b/src/main/webapp/WEB-INF/jsp/coda.jspf
+index 3e8f0c5..d8236ff 100644
+--- a/src/main/webapp/WEB-INF/jsp/coda.jspf
++++ b/src/main/webapp/WEB-INF/jsp/coda.jspf
+@@ -5,9 +5,7 @@
+ 
+ <tags:brutal-include value="footer"/>
+ 
+-<!-- build:js /js/jquery.js -->	
+-	<script src="/assets/js/deps/jquery.js"></script>
+-<!-- endbuild -->
++<script src="${contextPath}/js/jquery.js"></script>
+ 
+ <script type="text/javascript">
+ 	//UI flags (GLOBAL VARIABLES)
+@@ -28,64 +26,9 @@
+ 	var MESSAGES_LOADER_URL = "${linkTo[MessagesController].loadMessages}";
+ </script>
+ 
+-<!-- build:js /js/jquery-plugins.js -->	
+-	<script src="/assets/js/deps/diff_match_patch.js"></script>
+-	<script src="/assets/js/deps/pretty-text-diff.js"></script>
+-	<script src="/assets/js/deps/jquery.validate.min.js"></script>
+-	<script src="/assets/js/deps/jquery.joyride-2.0.3.js"></script>
+-	<script src="/assets/js/deps/select2.js"></script>
+-
+-	<script src="/assets/js/deps/picker.js"></script>
+-	<script src="/assets/js/deps/picker.date.js"></script>
+-	<script src="/assets/js/deps/translations/pt_BR.js"></script>
+-    <script src="/assets/js/fileuploader.js"></script>
+-    <script src="/assets/js/avatarupload.js"></script>
+-
+-    <script>window.FileAPI = { staticPath: '/assets/js/deps/fileapi/' };</script>
+-    <script src="/assets/js/deps/fileapi/FileAPI.min.js"></script>
+-<!-- endbuild -->
+-
+-<!-- build:js /js/mamute.js -->
+-	<script src="/assets/js/deps/prettify.js"></script>
+-	<script src="/assets/js/deps/Markdown.Converter.js"></script>
+-	<script src="/assets/js/deps/Markdown.Sanitizer.js"></script>
+-	<script src="/assets/js/deps/Markdown.Editor.js"></script>
+-	<script src="/assets/js/deps/marked.js"></script>
+-	<script src="/assets/js/deps/filepicker.js"></script>
+-	<script src="/assets/js/deps/feather.js"></script>
+-	<script src="/assets/js/messages.js"></script>
+-	<script src="/assets/js/tags-manager.js"></script>
+-	<script src="/assets/js/form-validation.js"></script>
+-	<script src="/assets/js/form-hints.js"></script>
+-	<script src="/assets/js/form-helper.js"></script>
+-	<script src="/assets/js/simple-ajax-form.js"></script>
+-	<script src="/assets/js/mark-as-solution.js"></script>
+-	<script src="/assets/js/watch.js"></script>
+-	<script src="/assets/js/form-markdown.js"></script>
+-	<script src="/assets/js/hide-next.js"></script>
+-	<script src="/assets/js/modal.js"></script>
+-	<script src="/assets/js/up-down-vote.js"></script>
+-	<script src="/assets/js/links-behaviour.js"></script>
+-	<script src="/assets/js/history-select-version.js"></script>
+-	<script src="/assets/js/submenu.js"></script>
+-	<script src="/assets/js/popup.js"></script>
+-	<script src="/assets/js/dropdown.js"></script>
+-	<script src="/assets/js/order-by.js"></script>
+-	<script src="/assets/js/share.js"></script>
+-	<script src="/assets/js/diff.js"></script>
+-	<script src="/assets/js/flag-it.js"></script>
+-	<script src="/assets/js/more-comments.js"></script>
+-	<script src="/assets/js/button-hints.js"></script>
+-	<script src="/assets/js/answer-form.js"></script>
+-	<script src="/assets/js/form-fix.js"></script>
+-	<script src="/assets/js/about-banner.js"></script>
+-	<script src="/assets/js/question-warnings.js"></script>
+-	<script src="/assets/js/approve-news.js"></script>
+-	<script src="/assets/js/ban-user.js"></script>
+-	<script src="/assets/js/question-suggestions.js"></script>
+-	<script src="/assets/js/delete-question.js"></script>
+-	<script src="/assets/js/ip-blocker.js"></script>
+-<!-- endbuild -->
++<script src="${contextPath}/js/jquery-plugins.js"></script>
++
++<script src="${contextPath}/js/mamute.js"></script>
+ 
+ <c:if test="${environment.supports('feature.analytics')}" >
+ 	<tags:brutal-include value="analytics"/>
+diff --git a/src/main/webapp/WEB-INF/jsp/question/showQuestion.jsp b/src/main/webapp/WEB-INF/jsp/question/showQuestion.jsp
+index 3d85416..0158d04 100644
+--- a/src/main/webapp/WEB-INF/jsp/question/showQuestion.jsp
++++ b/src/main/webapp/WEB-INF/jsp/question/showQuestion.jsp
+@@ -15,7 +15,7 @@
+ 			${t['menu.questions']}
+ 		</a>
+ 	</span>
+-	<span>»</span>
++	<span>ï¿½</span>
+ 	<span typeof="v:Breadcrumb">
+ 		<c:if test="${question.hasTags()}">
+ 			<a rel="v:url" property="v:title" href="${linkTo[ListController].withTag(question.mostImportantTag.name,1)}">
+@@ -23,7 +23,7 @@
+ 			</a>
+ 		</c:if>
+ 	</span>
+-	<span>»</span>
++	<span>ï¿½</span>
+ 	<span typeof="v:Breadcrumb">
+ 		<a rel="v:url" property="v:title" href="${linkTo[QuestionController].showQuestion(question, question.title)}">
+ 			<c:out value="${question.title}" escapeXml="true"/>
+diff --git a/src/main/webapp/WEB-INF/jsp/theme/default/terms.jspf b/src/main/webapp/WEB-INF/jsp/theme/default/terms.jspf
+index 1b4f261..8160180 100644
+--- a/src/main/webapp/WEB-INF/jsp/theme/default/terms.jspf
++++ b/src/main/webapp/WEB-INF/jsp/theme/default/terms.jspf
+@@ -1,32 +1,32 @@
+ <p>
+-Apesar dos administradores e moderadores deste fórum tentarem remover ou editar qualquer material indesejável logo que detectado, é impossível rever todas as mensagens.
+-Como tal, você reconhece por este que todas as mensagens postadas nos fóruns expressam os pontos de vista e opiniões dos seus respectivos autores e não dos administradores, moderadores ou o encarregado das páginas (exceto mensagens colocadas por essas pessoas) não sendo por tal responsáveis.
++Apesar dos administradores e moderadores deste fï¿½rum tentarem remover ou editar qualquer material indesejï¿½vel logo que detectado, ï¿½ impossï¿½vel rever todas as mensagens.
++Como tal, vocï¿½ reconhece por este que todas as mensagens postadas nos fï¿½runs expressam os pontos de vista e opiniï¿½es dos seus respectivos autores e nï¿½o dos administradores, moderadores ou o encarregado das pï¿½ginas (exceto mensagens colocadas por essas pessoas) nï¿½o sendo por tal responsï¿½veis.
+ </p>
+ 
+ <p>
+-Você aceita não postar qualquer mensagem abusiva, obscena, invulgar, insultuosa, de ódio, ameaçadora, sexualmente tendenciosa ou qualquer outro material que possa violar qualquer lei em vigor. Isto conduz à sua expulsão imediata e permanente.
++Vocï¿½ aceita nï¿½o postar qualquer mensagem abusiva, obscena, invulgar, insultuosa, de ï¿½dio, ameaï¿½adora, sexualmente tendenciosa ou qualquer outro material que possa violar qualquer lei em vigor. Isto conduz ï¿½ sua expulsï¿½o imediata e permanente.
+ </p>
+ 
+ <p>
+-Da mesma forma, mensagens de teor político e religioso são desencorajadas, e portanto, passíveis de moderação. Há comunidades específicas para este assunto.
++Da mesma forma, mensagens de teor polï¿½tico e religioso sï¿½o desencorajadas, e portanto, passï¿½veis de moderaï¿½ï¿½o. Hï¿½ comunidades especï¿½ficas para este assunto.
+ </p>
+ 
+ <p>
+-Os endereços IP de todas as mensagens são registrados para ajudar a implementar essas condições. Você concorda que quem faz e mantém estas páginas, administradores e moderadores deste fórum tem o direito de remover, editar, mover ou encerrar qualquer tópico em qualquer altura que eles assim o entendam.
++Os endereï¿½os IP de todas as mensagens sï¿½o registrados para ajudar a implementar essas condiï¿½ï¿½es. Vocï¿½ concorda que quem faz e mantï¿½m estas pï¿½ginas, administradores e moderadores deste fï¿½rum tem o direito de remover, editar, mover ou encerrar qualquer tï¿½pico em qualquer altura que eles assim o entendam.
+ </p>
+ 
+ <p>
+-Como usuário você aceita que qualquer informação que forneceu acima seja guardada numa base de dados. Apesar dessa informação não ser fornecida a terceiros sem a sua autorização, o encarregado das páginas, administradores ou moderadores não podem assumir a responsabilidade por qualquer tentativa de ato de "hacking", intromissão forçada e ilegal que conduza a essa informação ser exposta.
++Como usuï¿½rio vocï¿½ aceita que qualquer informaï¿½ï¿½o que forneceu acima seja guardada numa base de dados. Apesar dessa informaï¿½ï¿½o nï¿½o ser fornecida a terceiros sem a sua autorizaï¿½ï¿½o, o encarregado das pï¿½ginas, administradores ou moderadores nï¿½o podem assumir a responsabilidade por qualquer tentativa de ato de "hacking", intromissï¿½o forï¿½ada e ilegal que conduza a essa informaï¿½ï¿½o ser exposta.
+ </p>
+ 
+ <p>
+-Este sistema de fóruns usa "cookies" para guardar informação no seu computador. Esses "cookies" não possuem nenhuma da informação acima fornecida, apenas servem para melhorar a sua navagação enquanto visita estes fóruns. O endereço de email é apenas usado para confirmar a informação do seu registo e a senha (bem como para enviar novas senhas caso se esqueça da que acabou de submeter).
++Este sistema de fï¿½runs usa "cookies" para guardar informaï¿½ï¿½o no seu computador. Esses "cookies" nï¿½o possuem nenhuma da informaï¿½ï¿½o acima fornecida, apenas servem para melhorar a sua navagaï¿½ï¿½o enquanto visita estes fï¿½runs. O endereï¿½o de email ï¿½ apenas usado para confirmar a informaï¿½ï¿½o do seu registo e a senha (bem como para enviar novas senhas caso se esqueï¿½a da que acabou de submeter).
+ </p>
+ 
+ <p>
+-Você aceita ser automaticamente cadastrado para receber newsletters.
++Vocï¿½ aceita ser automaticamente cadastrado para receber newsletters.
+ </p>
+ 
+ <p>
+-No caso de dúvidas, favor contatar um dos administradores.
++No caso de dï¿½vidas, favor contatar um dos administradores.
+ </p>
+\ No newline at end of file
+diff --git a/src/main/webapp/WEB-INF/tags/header.tag b/src/main/webapp/WEB-INF/tags/header.tag
+index 2d40a50..f5d1308 100644
+--- a/src/main/webapp/WEB-INF/tags/header.tag
++++ b/src/main/webapp/WEB-INF/tags/header.tag
+@@ -18,54 +18,7 @@
+ <c:set var="facebookMetas" value="${facebookMetas}" scope="request" />
+ <tags:brutal-include value="metas" />
+ 
+-<!-- build:css /css/mamute.css -->
+-<link rel="stylesheet" href="/assets/generated-css/reset.css">
+-
+-<link rel="stylesheet" href="/css/deps/fontello.css">
+-<link rel="stylesheet" href="/css/deps/fontello-codes.css">
+-<link rel="stylesheet" href="/css/deps/fontello-embedded.css">
+-<link rel="stylesheet" href="/css/deps/fontello-ie7-codes.css">
+-<link rel="stylesheet" href="/css/deps/fontello-ie7.css">
+-<link rel="stylesheet" href="/css/deps/pagedown.css">
+-<link rel="stylesheet" href="/css/deps/prettify.css">
+-<link rel="stylesheet" href="/css/deps/joyride-2.0.3.css">
+-<link rel="stylesheet" href="/css/deps/select2.css">
+-
+-<link rel="stylesheet" href="/assets/generated-css/404.css">
+-<link rel="stylesheet" href="/assets/generated-css/about.css">
+-<link rel="stylesheet" href="/assets/generated-css/ads.css">
+-<link rel="stylesheet" href="/assets/generated-css/answer.css">
+-<link rel="stylesheet" href="/assets/generated-css/button.css">
+-<link rel="stylesheet" href="/assets/generated-css/comments.css">
+-<link rel="stylesheet" href="/assets/generated-css/footer.css">
+-<link rel="stylesheet" href="/assets/generated-css/form.css">
+-<link rel="stylesheet" href="/assets/generated-css/generics.css">
+-<link rel="stylesheet" href="/assets/generated-css/icons.css">
+-<link rel="stylesheet" href="/assets/generated-css/list-question.css">
+-<link rel="stylesheet" href="/assets/generated-css/main-header.css">
+-<link rel="stylesheet" href="/assets/generated-css/main-menu.css">
+-<link rel="stylesheet" href="/assets/generated-css/main-tags.css">
+-<link rel="stylesheet" href="/assets/generated-css/mamute-joyride.css">
+-<link rel="stylesheet" href="/assets/generated-css/markdown.css">
+-<link rel="stylesheet" href="/assets/generated-css/messages.css">
+-<link rel="stylesheet" href="/assets/generated-css/moderator.css">
+-<link rel="stylesheet" href="/assets/generated-css/news.css">
+-<link rel="stylesheet" href="/assets/generated-css/pagination.css">
+-<link rel="stylesheet" href="/assets/generated-css/ranking.css">
+-<link rel="stylesheet" href="/assets/generated-css/second-header.css">
+-<link rel="stylesheet" href="/assets/generated-css/show-question.css">
+-<link rel="stylesheet" href="/assets/generated-css/sidebar.css">
+-<link rel="stylesheet" href="/assets/generated-css/subheader.css">
+-<link rel="stylesheet" href="/assets/generated-css/tags.css">
+-<link rel="stylesheet" href="/assets/generated-css/text.css">
+-<link rel="stylesheet" href="/assets/generated-css/user.css">
+-<link rel="stylesheet" href="/assets/generated-css/vote.css">
+-<link rel="stylesheet" href="/assets/generated-css/default.css">
+-<link rel="stylesheet" href="/assets/generated-css/uploader.css">
+-
+-<link rel="stylesheet" href="/css/deps/pickadate/classic.css">
+-<link rel="stylesheet" href="/css/deps/pickadate/classic.date.css">
+-<!-- endbuild -->
++<link rel="stylesheet" href="${contextPath}/css/mamute.css"/>
+ 
+ <link rel="stylesheet" href="${contextPath}/css/deps/custom.css">
+ 
+diff --git a/src/test/java/org/mamute/auth/SignupInfoTest.java b/src/test/java/org/mamute/auth/SignupInfoTest.java
+index 7251252..cce7768 100644
+--- a/src/test/java/org/mamute/auth/SignupInfoTest.java
++++ b/src/test/java/org/mamute/auth/SignupInfoTest.java
+@@ -24,7 +24,7 @@ public class SignupInfoTest {
+ 		SignupInfo info = SignupInfo.fromFacebook(jsonObject).get();
+ 		assertEquals("chico@brutal.com", info.getEmail());
+ 		assertEquals("Francisco Sokol", info.getName());
+-		assertEquals("SÃ£o Paulo, Brazil", info.getLocation());
++		assertEquals("S Paulo, Brazil", info.getLocation());
+ 		assertTrue(info.getPhotoUri().getPath().contains("100001959511194"));
+ 		assertEquals(MethodType.FACEBOOK, info.getMethod());
+ 	}
+diff --git a/src/test/resources/facebook-user.json b/src/test/resources/facebook-user.json
+index 3a2f452..a527053 100644
+--- a/src/test/resources/facebook-user.json
++++ b/src/test/resources/facebook-user.json
+@@ -8,7 +8,7 @@
+   "birthday": "02/07/1989", 
+   "location": {
+     "id": "112047398814697", 
+-    "name": "SÃ£o Paulo, Brazil"
++    "name": "S Paulo, Brazil"
+   }, 
+   "gender": "male", 
+   "email": "chico@brutal.com", 
