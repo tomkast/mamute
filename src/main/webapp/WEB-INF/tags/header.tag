@@ -10,6 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <title><c:out value="${title}" escapeXml="true" /></title>
@@ -17,6 +18,9 @@
 <c:set var="metaDescription" value="${description}" scope="request" />
 <c:set var="facebookMetas" value="${facebookMetas}" scope="request" />
 <tags:brutal-include value="metas" />
+
+<!-- favicon -->
+<link rel='shortcut icon' type='image/x-icon' href='/imgs/favicon.ico' />
 
 <!-- build:css /css/mamute.css -->
 <link rel="stylesheet" href="/assets/generated-css/reset.css">
