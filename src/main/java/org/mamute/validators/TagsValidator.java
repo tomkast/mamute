@@ -39,7 +39,7 @@ public class TagsValidator {
 			String replace = name.replaceAll(env.get("tags.sanitizer.regex"), "");
 			if (replace.length() != 0) {
 				validator.add(messageFactory.build("error", "tag.errors.illegal_char", name, replace));
-			} else if (!isPresent(name, found)) {
+			} else if (!isPresent(name, found) && !env.supports("feature.tags.add.anyone")) {
 				validator.add(messageFactory.build("error", "tag.errors.doesnt_exist", name));
 			}
 		}
