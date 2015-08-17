@@ -28,6 +28,7 @@ public class DefaultAdminCreator {
 		if (result == 0) {
 			Random random = new Random(System.currentTimeMillis());
 			String email = "moderator@dharmafish.com";
+
 			User newUser = new User(fromTrustedText("moderator"), email).asModerator();
 			
 			String number = Long.toString(random.nextLong());
