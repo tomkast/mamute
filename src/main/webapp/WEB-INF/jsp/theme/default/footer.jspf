@@ -15,8 +15,7 @@
 			<a href="${linkTo[ListController].unanswered}">${t['menu.unanswered']}</a>
 		</span>
 		<span class="footer-vraptor">
-			Powered by: <a href="http://www.vraptor.org/">${t['footer.vraptor']}</a>
-			and <a href="http://www.mamute.org/">${t['footer.mamute']}</a>
+			Powered by: <a href="http://www.vraptor.org/">${t['footer.vraptor']}</a>			
 		</span>
 		<span class="footer-muted-message">
 		</span>
