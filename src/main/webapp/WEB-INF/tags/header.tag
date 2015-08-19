@@ -18,8 +18,9 @@
 <c:set var="facebookMetas" value="${facebookMetas}" scope="request" />
 <tags:brutal-include value="metas" />
 
-+<!-- favicon -->
-+<link rel='shortcut icon' type='image/x-icon' href='/imgs/favicon.ico' />
+<!-- favicon -->
+<link rel="shortcut icon" type="image/x-icon" href="/imgs/favicon.ico" />
+
 
 
 <!-- build:css /css/mamute.css -->
