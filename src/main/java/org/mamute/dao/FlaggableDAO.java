@@ -16,7 +16,7 @@ import org.mamute.model.User;
 import org.mamute.model.interfaces.Flaggable;
 
 public class FlaggableDAO {
-	private static final long MIN_FLAGS = 2l;
+	private static final long MIN_FLAGS = l;
 
 	private final Session session;
 	private final MamuteMetaInformation meta;
