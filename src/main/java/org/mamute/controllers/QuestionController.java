@@ -12,6 +12,7 @@ import br.com.caelum.vraptor.view.Results;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import org.mamute.auth.FacebookAuthService;
+import org.mamute.auth.GoogleAuthService;
 import org.mamute.brutauth.auth.rules.*;
 import org.mamute.dao.*;
 import org.mamute.event.QuestionCreated;
