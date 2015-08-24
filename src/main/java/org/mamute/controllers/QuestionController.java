@@ -59,6 +59,8 @@ public class QuestionController {
 	@Inject
 	private FacebookAuthService facebook;
 	@Inject
+	private GoogleAuthService google;
+	@Inject
 	private PostViewCounter viewCounter;
 	@Inject
 	private Linker linker;
@@ -151,6 +153,7 @@ public class QuestionController {
 			result.include("userMediumPhoto", true);
 			linker.linkTo(this).showQuestion(question, sluggedTitle);
 			result.include("facebookUrl", facebook.getOauthUrl(linker.get()));
+			result.include("googleUrl", google.getOauthUrl(linker.get()));
 		} else {
 			result.notFound();
 		}
