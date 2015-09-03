@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import br.com.caelum.vraptor.environment.Environment;
-import br.com.caelum.vraptor.ioc.ApplicationScoped;
 import br.com.caelum.vraptor.simplemail.Mailer;
 
 import com.amazonaws.auth.PropertiesCredentials;
@@ -25,7 +24,7 @@ import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 
-@ApplicationScoped
+
 public class AmazonSESMailer implements Mailer {
 	private final Environment env;
 	private final Session session;
