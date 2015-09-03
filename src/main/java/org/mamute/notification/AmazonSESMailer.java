@@ -38,7 +38,7 @@ public class AmazonSESMailer implements Mailer {
 		this.client = new AmazonSimpleEmailServiceClient(credentials);		
         Region REGION = Region.getRegion(Regions.EU_WEST_1);
         this.client.setRegion(REGION);
-        this.client.sendEmail(request); 
+         
         
 		Properties props = new Properties();
 		props.setProperty("mail.transport.protocol", "aws");
@@ -81,7 +81,7 @@ public class AmazonSESMailer implements Mailer {
 				throw new EmailException(e);
 			}
 		} else {
-			new MockMailer().send(email);
+			;//new MockMailer().send(email);
 		}
 	}
 }
